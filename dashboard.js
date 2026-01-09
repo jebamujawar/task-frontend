@@ -1,4 +1,4 @@
-const API_URL = "https://task-backend-wsf7.onrender.com/api"; // Replace with your backend URL
+const API_URL = "https://task-backend-wsf7.onrender.com/api"; // Backend URL
 
 // Get DOM elements
 const tasksContainer = document.getElementById("tasksContainer");
@@ -15,23 +15,45 @@ logoutBtn.addEventListener("click", () => {
   window.location.href = "index.html";
 });
 
-// ------------------ Helper: fetch with token ------------------
+// ------------------ Helper: fetch with token & safe error handling ------------------
 async function fetchWithToken(url, options = {}) {
   options.headers = {
     ...(options.headers || {}),
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`
   };
+
   const res = await fetch(url, options);
-  if (!res.ok) throw await res.json();
-  return res.json();
+
+  // Safe error handling
+  if (!res.ok) {
+    try {
+      // Try to parse JSON error from backend
+      const errorData = await res.json();
+      console.error("Backend error:", errorData);
+      throw errorData;
+    } catch {
+      // Fallback: non-JSON response (like HTML 404 page)
+      const text = await res.text();
+      console.error("Fetch error (non-JSON):", text);
+      throw { error: text };
+    }
+  }
+
+  // Safe JSON parse
+  try {
+    return await res.json();
+  } catch {
+    console.error("Response is not JSON:", await res.text());
+    return null;
+  }
 }
 
 // ------------------ Load Tasks ------------------
 async function loadTasks() {
   try {
     const tasks = await fetchWithToken(`${API_URL}/tasks`);
-    if (tasks.length === 0) {
+    if (!tasks || tasks.length === 0) {
       tasksContainer.innerHTML = `<p style="text-align:center;">No tasks yet. Add your first task!</p>`;
       return;
     }
@@ -46,7 +68,7 @@ async function loadTasks() {
       </div>
     `).join('');
   } catch (err) {
-    console.error(err);
+    console.error("Failed to load tasks:", err);
     tasksContainer.innerHTML = `<p style="text-align:center; color:red;">Failed to load tasks.</p>`;
   }
 }
@@ -65,7 +87,8 @@ taskForm.addEventListener("submit", async e => {
     taskForm.reset();
     loadTasks();
   } catch (err) {
-    console.error(err);
+    console.error("Failed to add task:", err);
+    alert(err.error || "Failed to add task.");
   }
 });
 
@@ -78,7 +101,8 @@ window.toggleComplete = async (id, completed) => {
     });
     loadTasks();
   } catch (err) {
-    console.error(err);
+    console.error("Failed to toggle task:", err);
+    alert(err.error || "Failed to update task.");
   }
 };
 
@@ -89,9 +113,10 @@ window.deleteTask = async (id) => {
     await fetchWithToken(`${API_URL}/tasks/${id}`, { method: "DELETE" });
     loadTasks();
   } catch (err) {
-    console.error(err);
+    console.error("Failed to delete task:", err);
+    alert(err.error || "Failed to delete task.");
   }
 };
 
-// Initial load
+// ------------------ Initial load ------------------
 loadTasks();
