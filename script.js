@@ -1,6 +1,6 @@
 const API_URL = "https://task-backend-wsf7.onrender.com/api"; // your backend URL
 
-// ------------------ Auth ------------------
+// auth
 const signupForm = document.getElementById("signupForm");
 const loginForm = document.getElementById("loginForm");
 
