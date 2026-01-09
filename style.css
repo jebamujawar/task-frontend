@@ -1,0 +1,61 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f4f4;
+  color: #333;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #333;
+  color: #fff;
+  padding: 1rem 2rem;
+}
+
+header button {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+main {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+form input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+form button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.task-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.task-card.completed {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.task-card button {
+  margin-left: 0.5rem;
+}
